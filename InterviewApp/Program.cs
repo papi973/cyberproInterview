@@ -20,7 +20,9 @@ class Program
             .ConfigureServices((context, services) => 
             {
                 services.Configure<GreetingOptions>(context.Configuration.GetSection("Greeting"));
-                services.AddTransient<IGreetingService, GreetingService>(); 
+                services.AddTransient<IGreetingService, GreetingService>();
+                services.AddSingleton(TimeProvider.System);
+                services.AddTransient<ITimeGreetingService, TimeGreetingService>();
             })
             .Build();
 

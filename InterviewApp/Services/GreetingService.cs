@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace InterviewApp.Services
 {
-    public class GreetingService(IOptions<GreetingOptions> options, ILogger<GreetingService> logger) : IGreetingService
+    public class GreetingService(IOptions<GreetingOptions> options, ILogger<GreetingService> logger, ITimeGreetingService timeGreetingService) : IGreetingService
     {
         private const string DefaultLanguage = "English";
 
@@ -21,26 +21,25 @@ namespace InterviewApp.Services
 
         public string GetLanguageGreeting()
         {
-            if (string.IsNullOrWhiteSpace(_options.Language))
+            if (!Greetings.TryGetValue(_options.Language ?? "", out var greeting))
             {
                 return Greetings[DefaultLanguage];
             }
 
-            if (Greetings.TryGetValue(_options.Language, out var greeting))
-            {
-                return $"{greeting}! {_options.Language}";
-            }
+            return $"{greeting}! {_options.Message}";
+        }
 
-            return Greetings[DefaultLanguage];
+        public string GetGreeting()
+        {
+            return $"{timeGreetingService.GetTimeGreeting()}, {GetLanguageGreeting()}";
         }
 
         public void Run()
         {
             try
             {
-                logger.LogInformation("Running greeting service.");
-                logger.LogInformation("Greeting message: {Message}", _options.Message);
-                Console.WriteLine(GetLanguageGreeting());
+                logger.LogInformation("Running greeting service. \n");
+                Console.WriteLine(GetGreeting());
 
             }
             catch (Exception ex)
