@@ -2,23 +2,24 @@
 using Microsoft.Extensions.Options;
 using InterviewApp.Models;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging; 
 
 namespace InterviewApp.Services
 {
-    public class GreetingService(IOptions<GreetingOptions> options) : IGreetingService
+    public class GreetingService(IOptions<GreetingOptions> options, ILogger<GreetingService> logger) : IGreetingService
     {
         private const string DefaultLanguage = "English";
 
         private static readonly Dictionary<string, string> Greetings = new(StringComparer.OrdinalIgnoreCase)
         {
-            { "English", "Hello!" },
-            { "Afrikaans", "Hallo!" },
-            { "Zulu", "Sawubona !" }
+            { "English", "Hello" },
+            { "Afrikaans", "Hallo" },
+            { "Zulu", "Sawubona" }
         };
 
         private readonly GreetingOptions _options = options.Value;
 
-        public string GetGreetingLanguage()
+        public string GetLanguageGreeting()
         {
             if (string.IsNullOrWhiteSpace(_options.Language))
             {
@@ -35,7 +36,17 @@ namespace InterviewApp.Services
 
         public void Run()
         {
-            Console.WriteLine(_options.Message);
+            try
+            {
+                logger.LogInformation("Running greeting service.");
+                logger.LogInformation("Greeting message: {Message}", _options.Message);
+                Console.WriteLine(GetLanguageGreeting());
+
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to display greeting.");
+            }
         }
     }
 }
