@@ -4,5 +4,4 @@ public interface IGreetingService
 {
     string GetLanguageGreeting();
     string GetGreeting();
-    void Run();
 }

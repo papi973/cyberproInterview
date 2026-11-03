@@ -1,5 +1,7 @@
 ﻿using InterviewApp.Models;
+using InterviewApp.Queries;
 using InterviewApp.Services;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +25,7 @@ class Program
                 services.AddTransient<IGreetingService, GreetingService>();
                 services.AddSingleton(TimeProvider.System);
                 services.AddTransient<ITimeGreetingService, TimeGreetingService>();
+                services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
             })
             .Build();
 
@@ -42,7 +45,16 @@ class Program
             return;
         }
 
-        var greetingService = host.Services.GetRequiredService<IGreetingService>();
-        greetingService.Run();
+        try
+        {
+            var mediator = host.Services.GetRequiredService<IMediator>();
+            var greeting = await mediator.Send(new GreetUserQuery());
+            Console.WriteLine(greeting);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to display greeting");
+            Environment.ExitCode = 1;
+        }
     }
 }

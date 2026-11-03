@@ -8,6 +8,7 @@ namespace InterviewApp.Services
 {
     public class GreetingService(IOptions<GreetingOptions> options, ILogger<GreetingService> logger, ITimeGreetingService timeGreetingService) : IGreetingService
     {
+
         private const string DefaultLanguage = "English";
 
         private static readonly Dictionary<string, string> Greetings = new(StringComparer.OrdinalIgnoreCase)
@@ -21,6 +22,8 @@ namespace InterviewApp.Services
 
         public string GetLanguageGreeting()
         {
+            logger.LogInformation("GreetingService started for language '{Language}'\n", _options.Language);
+
             if (!Greetings.TryGetValue(_options.Language ?? "", out var greeting))
             {
                 return Greetings[DefaultLanguage];
@@ -31,21 +34,7 @@ namespace InterviewApp.Services
 
         public string GetGreeting()
         {
-            return $"{timeGreetingService.GetTimeGreeting()}. {GetLanguageGreeting()}";
-        }
-
-        public void Run()
-        {
-            try
-            {
-                logger.LogInformation("Running greeting service. \n");
-                Console.WriteLine(GetGreeting());
-
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Failed to display greeting.");
-            }
+            return $"{timeGreetingService.GetTimeGreeting()}. {GetLanguageGreeting()} \n\n";
         }
     }
 }
