@@ -12,9 +12,9 @@ namespace InterviewApp.Services
 
         private static readonly Dictionary<string, string> Greetings = new(StringComparer.OrdinalIgnoreCase)
         {
-            { "English", "Hello" },
-            { "Afrikaans", "Hallo" },
-            { "Zulu", "Sawubona" }
+            { "English", "Hello!" },
+            { "Afrikaans", "Hallo!" },
+            { "Zulu", "Sawubona!" }
         };
 
         private readonly GreetingOptions _options = options.Value;
@@ -26,12 +26,12 @@ namespace InterviewApp.Services
                 return Greetings[DefaultLanguage];
             }
 
-            return $"{greeting}! {_options.Message}";
+            return $"{greeting} {_options.Message}";
         }
 
         public string GetGreeting()
         {
-            return $"{timeGreetingService.GetTimeGreeting()}, {GetLanguageGreeting()}";
+            return $"{timeGreetingService.GetTimeGreeting()}. {GetLanguageGreeting()}";
         }
 
         public void Run()
