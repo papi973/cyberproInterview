@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using InterviewApp.Services;
+using InterviewApp.Models;
 
 class Program
 {
@@ -13,12 +14,14 @@ class Program
             {
                 config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             })
-            .ConfigureServices((_, services) => { services.AddTransient<IGreetingService, GreetingService>(); })
+            .ConfigureServices((context, services) => 
+            {
+                services.Configure<GreetingOptions>(context.Configuration.GetSection("Greeting"));
+                services.AddTransient<IGreetingService, GreetingService>(); 
+            })
             .Build();
 
         var greetingService = host.Services.GetRequiredService<IGreetingService>();
         greetingService.Run();
-
-        await host.RunAsync();
     }
 }
